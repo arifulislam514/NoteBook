@@ -1,0 +1,3181 @@
+openapi: 3.0.3
+info:
+  title: Notebook API
+  version: 1.0.0
+  description: Comprehensive REST API documentation for the Notebook application covering
+    Academic records, Skills, Study Sessions, Sync, Uploads, and Analytics.
+paths:
+  /api/academic/chapters/:
+    get:
+      operationId: academic_chapters_list
+      description: List chapters for subjects. Optionally filter by subject_id.
+      summary: List chapters
+      parameters:
+      - in: query
+        name: subject_id
+        schema:
+          type: string
+        description: Filter by subject UUID
+      tags:
+      - Academic - Chapters
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chapter'
+          description: ''
+    post:
+      operationId: academic_chapters_create
+      description: Create a chapter under a subject.
+      summary: Create chapter
+      tags:
+      - Academic - Chapters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChapterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChapterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChapterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chapter'
+          description: ''
+  /api/academic/chapters/{id}/:
+    patch:
+      operationId: academic_chapters_partial_update
+      description: Partially update chapter name or order.
+      summary: Update chapter
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Chapters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedChapterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedChapterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedChapterRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chapter'
+          description: ''
+    delete:
+      operationId: academic_chapters_destroy
+      description: Soft delete a chapter.
+      summary: Delete chapter
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Chapters
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/academic/semesters/:
+    get:
+      operationId: academic_semesters_list
+      description: Returns all active semesters belonging to the authenticated user.
+      summary: List all semesters
+      tags:
+      - Academic - Semesters
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Semester'
+          description: ''
+    post:
+      operationId: academic_semesters_create
+      description: Create a new semester record.
+      summary: Create semester
+      tags:
+      - Academic - Semesters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SemesterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SemesterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SemesterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Semester'
+          description: ''
+  /api/academic/semesters/{id}/:
+    patch:
+      operationId: academic_semesters_partial_update
+      description: Partially update an existing semester by its UUID.
+      summary: Update semester
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Semesters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSemesterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSemesterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSemesterRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Semester'
+          description: ''
+    delete:
+      operationId: academic_semesters_destroy
+      description: Soft delete a semester by marking is_deleted=True.
+      summary: Delete semester
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Semesters
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/academic/subjects/:
+    get:
+      operationId: academic_subjects_list
+      description: List subjects belonging to the user. Optionally filter by semester_id.
+      summary: List subjects
+      parameters:
+      - in: query
+        name: semester_id
+        schema:
+          type: string
+        description: Filter subjects by semester UUID
+      tags:
+      - Academic - Subjects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subject'
+          description: ''
+    post:
+      operationId: academic_subjects_create
+      description: Create a new subject under a valid semester_id.
+      summary: Create subject
+      tags:
+      - Academic - Subjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubjectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubjectRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+  /api/academic/subjects/{id}/:
+    patch:
+      operationId: academic_subjects_partial_update
+      description: Partially update an existing subject.
+      summary: Update subject
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Subjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubjectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSubjectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSubjectRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+    delete:
+      operationId: academic_subjects_destroy
+      description: Soft delete a subject by its UUID.
+      summary: Delete subject
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Subjects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/academic/topic-blocks/:
+    get:
+      operationId: academic_topic_blocks_list
+      description: List content blocks (text, image, markdown, code, etc.) for a topic.
+        Optionally filter by topic_id.
+      summary: List topic blocks
+      parameters:
+      - in: query
+        name: topic_id
+        schema:
+          type: string
+        description: Filter by topic UUID
+      tags:
+      - Academic - Topic Blocks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AcademicTopicBlock'
+          description: ''
+    post:
+      operationId: academic_topic_blocks_create
+      description: Add a new content block to an academic topic.
+      summary: Create topic block
+      tags:
+      - Academic - Topic Blocks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcademicTopicBlockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AcademicTopicBlockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AcademicTopicBlockRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicTopicBlock'
+          description: ''
+  /api/academic/topic-blocks/{id}/:
+    patch:
+      operationId: academic_topic_blocks_partial_update
+      description: Partially update content or order of a topic block.
+      summary: Update topic block
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Topic Blocks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicTopicBlockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicTopicBlockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicTopicBlockRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicTopicBlock'
+          description: ''
+    delete:
+      operationId: academic_topic_blocks_destroy
+      description: Soft delete a topic block.
+      summary: Delete topic block
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Topic Blocks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/academic/topic-blocks/reorder/:
+    post:
+      operationId: academic_topic_blocks_reorder_create
+      description: Batch update the display order of multiple blocks within a topic.
+      summary: Reorder topic blocks
+      tags:
+      - Academic - Topic Blocks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcademicTopicBlockReorderRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AcademicTopicBlockReorderRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AcademicTopicBlockReorderRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/academic/topics/:
+    get:
+      operationId: academic_topics_list
+      description: List topics under chapters. Optionally filter by chapter_id.
+      summary: List academic topics
+      parameters:
+      - in: query
+        name: chapter_id
+        schema:
+          type: string
+        description: Filter by chapter UUID
+      tags:
+      - Academic - Topics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AcademicTopic'
+          description: ''
+    post:
+      operationId: academic_topics_create
+      description: Create a new topic under a chapter.
+      summary: Create academic topic
+      tags:
+      - Academic - Topics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcademicTopicRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AcademicTopicRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AcademicTopicRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicTopic'
+          description: ''
+  /api/academic/topics/{id}/:
+    patch:
+      operationId: academic_topics_partial_update
+      description: Partially update topic title.
+      summary: Update academic topic
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Topics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicTopicRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicTopicRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicTopicRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicTopic'
+          description: ''
+    delete:
+      operationId: academic_topics_destroy
+      description: Soft delete an academic topic.
+      summary: Delete academic topic
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Topics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/academic/want-to-learn/:
+    get:
+      operationId: academic_want_to_learn_list
+      description: List wish-list topics to learn for subjects. Optionally filter
+        by subject_id.
+      summary: List academic want-to-learn items
+      parameters:
+      - in: query
+        name: subject_id
+        schema:
+          type: string
+        description: Filter by subject UUID
+      tags:
+      - Academic - Want to Learn
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AcademicWantToLearn'
+          description: ''
+    post:
+      operationId: academic_want_to_learn_create
+      description: Create a new topic wishlist item under a subject.
+      summary: Create academic want-to-learn item
+      tags:
+      - Academic - Want to Learn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcademicWantToLearnRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AcademicWantToLearnRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AcademicWantToLearnRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicWantToLearn'
+          description: ''
+  /api/academic/want-to-learn/{id}/:
+    patch:
+      operationId: academic_want_to_learn_partial_update
+      description: Partially update status (is_done) or title of a want-to-learn item.
+      summary: Update academic want-to-learn item
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Want to Learn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicWantToLearnRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicWantToLearnRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAcademicWantToLearnRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademicWantToLearn'
+          description: ''
+    delete:
+      operationId: academic_want_to_learn_destroy
+      description: Soft delete a want-to-learn item.
+      summary: Delete academic want-to-learn item
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Academic - Want to Learn
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/analytics/overview/:
+    get:
+      operationId: analytics_overview_retrieve
+      description: Academic vs Skill study time breakdown, daily timeline, and top
+        5 topics for daily, weekly, monthly, or yearly periods.
+      summary: Overview study analytics
+      parameters:
+      - in: query
+        name: date
+        schema:
+          type: string
+        description: Reference date formatted as YYYY-MM-DD (defaults to today)
+      - in: query
+        name: period
+        schema:
+          type: string
+          enum:
+          - daily
+          - monthly
+          - weekly
+          - yearly
+          default: weekly
+        description: Analytics time period
+      tags:
+      - Analytics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OverviewAnalyticsResponse'
+          description: ''
+  /api/analytics/skill/:
+    get:
+      operationId: analytics_skill_retrieve
+      description: Returns total seconds studied across all sub-skills under a parent
+        skill.
+      summary: Skill total study time
+      parameters:
+      - in: query
+        name: skill_id
+        schema:
+          type: string
+        description: UUID of the skill
+        required: true
+      tags:
+      - Analytics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillTimeResponse'
+          description: ''
+  /api/analytics/sub-skill/:
+    get:
+      operationId: analytics_sub_skill_retrieve
+      description: Returns total seconds studied for all topics belonging to a sub-skill.
+      summary: Sub-skill total study time
+      parameters:
+      - in: query
+        name: sub_skill_id
+        schema:
+          type: string
+        description: UUID of the sub-skill
+        required: true
+      tags:
+      - Analytics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubSkillTimeResponse'
+          description: ''
+  /api/analytics/topic/:
+    get:
+      operationId: analytics_topic_retrieve
+      description: Returns total seconds studied for a specific academic or skill
+        topic.
+      summary: Topic total study time
+      parameters:
+      - in: query
+        name: topic_id
+        schema:
+          type: string
+        description: UUID of the topic
+        required: true
+      - in: query
+        name: topic_type
+        schema:
+          type: string
+          enum:
+          - academic
+          - skill
+        description: Type of topic
+        required: true
+      tags:
+      - Analytics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopicTimeResponse'
+          description: ''
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: Authenticate with email and password to receive JWT access and
+        refresh tokens.
+      summary: Login user
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          description: ''
+  /api/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      description: Retrieve the ID and email of the currently authenticated user.
+      summary: Current user info
+      tags:
+      - Authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeResponse'
+          description: ''
+  /api/auth/register/:
+    post:
+      operationId: auth_register_create
+      description: Register a new account with email and password. Returns user details
+        and JWT access/refresh tokens.
+      summary: Register new user
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          description: ''
+  /api/auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/sessions/{id}/:
+    patch:
+      operationId: sessions_partial_update
+      description: Update duration seconds and/or mark a study session as completed.
+      summary: Update or end session
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Study Sessions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSessionUpdateRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSessionUpdateRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSessionUpdateRequestRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopicSessionResponse'
+          description: ''
+  /api/sessions/active/:
+    get:
+      operationId: sessions_active_retrieve
+      description: Returns the currently active (not completed) session, or null if
+        no session is running.
+      summary: Get active session
+      tags:
+      - Study Sessions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopicSessionResponse'
+          description: ''
+  /api/sessions/start/:
+    post:
+      operationId: sessions_start_create
+      description: Start a new study session for an academic or skill topic (stopwatch
+        or timer mode).
+      summary: Start new session
+      tags:
+      - Study Sessions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionStartRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SessionStartRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SessionStartRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopicSessionResponse'
+          description: ''
+  /api/skills/:
+    get:
+      operationId: skills_list
+      description: Returns all active skills belonging to the authenticated user.
+      summary: List skills
+      tags:
+      - Skills
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Skill'
+          description: ''
+    post:
+      operationId: skills_create
+      description: Create a new skill category.
+      summary: Create skill
+      tags:
+      - Skills
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SkillRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SkillRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+          description: ''
+  /api/skills/{id}/:
+    patch:
+      operationId: skills_partial_update
+      description: Partially update skill name.
+      summary: Update skill
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+          description: ''
+    delete:
+      operationId: skills_destroy
+      description: Soft delete a skill.
+      summary: Delete skill
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/skills/answer-blocks/:
+    get:
+      operationId: skills_answer_blocks_list
+      description: List content blocks for an answer. Optionally filter by answer_id.
+      summary: List answer blocks
+      parameters:
+      - in: query
+        name: answer_id
+        schema:
+          type: string
+        description: Filter by answer UUID
+      tags:
+      - Skills - Evaluation Answer Blocks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EvaluationAnswerBlock'
+          description: ''
+    post:
+      operationId: skills_answer_blocks_create
+      description: Add a new content block to an evaluation answer.
+      summary: Create answer block
+      tags:
+      - Skills - Evaluation Answer Blocks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluationAnswerBlockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EvaluationAnswerBlockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EvaluationAnswerBlockRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationAnswerBlock'
+          description: ''
+  /api/skills/answer-blocks/{id}/:
+    patch:
+      operationId: skills_answer_blocks_partial_update
+      description: Partially update content or order of an answer block.
+      summary: Update answer block
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Evaluation Answer Blocks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEvaluationAnswerBlockRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEvaluationAnswerBlockRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEvaluationAnswerBlockRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationAnswerBlock'
+          description: ''
+    delete:
+      operationId: skills_answer_blocks_destroy
+      description: Soft delete an answer block.
+      summary: Delete answer block
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Evaluation Answer Blocks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/skills/answer-blocks/reorder/:
+    post:
+      operationId: skills_answer_blocks_reorder_create
+      description: Batch update the order of blocks for an evaluation answer.
+      summary: Reorder answer blocks
+      tags:
+      - Skills - Evaluation Answer Blocks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluationAnswerBlockReorderRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EvaluationAnswerBlockReorderRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EvaluationAnswerBlockReorderRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/skills/evaluation-answers/:
+    get:
+      operationId: skills_evaluation_answers_list
+      description: List evaluation answers. Optionally filter by skill_topic_id and
+        mastery level.
+      summary: List evaluation answers
+      parameters:
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - advanced
+          - basic
+          - expert
+          - intermediate
+        description: Filter by level
+      - in: query
+        name: skill_topic_id
+        schema:
+          type: string
+        description: Filter by skill topic UUID
+      tags:
+      - Skills - Evaluation Answers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EvaluationAnswer'
+          description: ''
+    post:
+      operationId: skills_evaluation_answers_create
+      description: Submit an evaluation answer linking a skill topic and an evaluation
+        question.
+      summary: Create evaluation answer
+      tags:
+      - Skills - Evaluation Answers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluationAnswerCreateRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EvaluationAnswerCreateRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EvaluationAnswerCreateRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationAnswer'
+          description: ''
+  /api/skills/evaluation-answers/{id}/:
+    get:
+      operationId: skills_evaluation_answers_retrieve
+      description: Retrieve an evaluation answer including its nested content blocks
+        and question text.
+      summary: Get evaluation answer with blocks
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Evaluation Answers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationAnswerDetail'
+          description: ''
+    delete:
+      operationId: skills_evaluation_answers_destroy
+      description: Soft delete an evaluation answer.
+      summary: Delete evaluation answer
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Evaluation Answers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/skills/questions/:
+    get:
+      operationId: skills_questions_list
+      description: Retrieve evaluation questions for a specific mastery level (basic,
+        intermediate, advanced, expert). Auto-seeds defaults if not seeded yet.
+      summary: List evaluation questions
+      parameters:
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - advanced
+          - basic
+          - expert
+          - intermediate
+        description: Mastery level
+        required: true
+      tags:
+      - Skills - Evaluation Questions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EvaluationQuestion'
+          description: ''
+    post:
+      operationId: skills_questions_create
+      description: Create a custom evaluation question for a mastery level.
+      summary: Create evaluation question
+      tags:
+      - Skills - Evaluation Questions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluationQuestionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EvaluationQuestionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EvaluationQuestionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationQuestion'
+          description: ''
+  /api/skills/questions/{id}/:
+    patch:
+      operationId: skills_questions_partial_update
+      description: Partially update question text or order.
+      summary: Update evaluation question
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Evaluation Questions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEvaluationQuestionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEvaluationQuestionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEvaluationQuestionRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationQuestion'
+          description: ''
+    delete:
+      operationId: skills_questions_destroy
+      description: Soft delete an evaluation question and cascade delete linked answers.
+      summary: Delete evaluation question
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Evaluation Questions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/skills/questions/reorder/:
+    post:
+      operationId: skills_questions_reorder_create
+      description: Batch update display ordering of evaluation questions.
+      summary: Reorder evaluation questions
+      tags:
+      - Skills - Evaluation Questions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluationQuestionReorderRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EvaluationQuestionReorderRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EvaluationQuestionReorderRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/skills/sub-skills/:
+    get:
+      operationId: skills_sub_skills_list
+      description: List sub-skills belonging to user. Optionally filter by skill_id.
+      summary: List sub-skills
+      parameters:
+      - in: query
+        name: skill_id
+        schema:
+          type: string
+        description: Filter by parent skill UUID
+      tags:
+      - Skills - Sub-Skills
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubSkill'
+          description: ''
+    post:
+      operationId: skills_sub_skills_create
+      description: Create a sub-skill under a parent skill_id.
+      summary: Create sub-skill
+      tags:
+      - Skills - Sub-Skills
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubSkillRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubSkillRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubSkillRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubSkill'
+          description: ''
+  /api/skills/sub-skills/{id}/:
+    patch:
+      operationId: skills_sub_skills_partial_update
+      description: Partially update sub-skill name.
+      summary: Update sub-skill
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Sub-Skills
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubSkillRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSubSkillRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSubSkillRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubSkill'
+          description: ''
+    delete:
+      operationId: skills_sub_skills_destroy
+      description: Soft delete a sub-skill.
+      summary: Delete sub-skill
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Sub-Skills
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/skills/topics/:
+    get:
+      operationId: skills_topics_list
+      description: List topics under a sub-skill. Optionally filter by sub_skill_id.
+      summary: List skill topics
+      parameters:
+      - in: query
+        name: sub_skill_id
+        schema:
+          type: string
+        description: Filter by sub-skill UUID
+      tags:
+      - Skills - Topics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkillTopic'
+          description: ''
+    post:
+      operationId: skills_topics_create
+      description: Create a new topic under a sub-skill.
+      summary: Create skill topic
+      tags:
+      - Skills - Topics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillTopicRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SkillTopicRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SkillTopicRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillTopic'
+          description: ''
+  /api/skills/topics/{id}/:
+    patch:
+      operationId: skills_topics_partial_update
+      description: Partially update topic title or current_level.
+      summary: Update skill topic
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Topics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillTopicRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillTopicRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillTopicRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillTopic'
+          description: ''
+    delete:
+      operationId: skills_topics_destroy
+      description: Soft delete a skill topic.
+      summary: Delete skill topic
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Topics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/skills/want-to-learn/:
+    get:
+      operationId: skills_want_to_learn_list
+      description: List wish-list topics under sub-skills. Optionally filter by sub_skill_id.
+      summary: List skill want-to-learn items
+      parameters:
+      - in: query
+        name: sub_skill_id
+        schema:
+          type: string
+        description: Filter by sub-skill UUID
+      tags:
+      - Skills - Want to Learn
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkillWantToLearn'
+          description: ''
+    post:
+      operationId: skills_want_to_learn_create
+      description: Add a want-to-learn wish item under a sub-skill.
+      summary: Create skill want-to-learn item
+      tags:
+      - Skills - Want to Learn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillWantToLearnRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SkillWantToLearnRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SkillWantToLearnRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillWantToLearn'
+          description: ''
+  /api/skills/want-to-learn/{id}/:
+    patch:
+      operationId: skills_want_to_learn_partial_update
+      description: Partially update status (is_done) or title.
+      summary: Update skill want-to-learn item
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Want to Learn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillWantToLearnRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillWantToLearnRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSkillWantToLearnRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillWantToLearn'
+          description: ''
+    delete:
+      operationId: skills_want_to_learn_destroy
+      description: Soft delete a want-to-learn item.
+      summary: Delete skill want-to-learn item
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - Skills - Want to Learn
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/sync/push/:
+    post:
+      operationId: sync_push_create
+      description: Upload client changes across all models and receive server-side
+        changes since the last_sync timestamp.
+      summary: Bidirectional sync push
+      tags:
+      - Data Synchronization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncPushRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SyncPushRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SyncPushRequestRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncPushResponse'
+          description: ''
+  /api/upload/image/:
+    post:
+      operationId: upload_image_create
+      description: Upload an image file (max 10MB, jpg/png/gif/webp) to Cloudinary
+        storage and receive a public URL.
+      summary: Upload image to Cloudinary
+      tags:
+      - Upload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImageUploadRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImageUploadRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageUploadResponse'
+          description: ''
+components:
+  schemas:
+    AcademicTopic:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 300
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - title
+      - updated_at
+    AcademicTopicBlock:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        content: {}
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - content
+      - type
+      - updated_at
+    AcademicTopicBlockReorderRequestRequest:
+      type: object
+      properties:
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockOrderItemRequest'
+          description: List of blocks with updated order values
+      required:
+      - blocks
+    AcademicTopicBlockRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        topic_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        content: {}
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - content
+      - type
+    AcademicTopicRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        chapter_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - chapter_id
+      - title
+    AcademicWantToLearn:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 300
+        is_done:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - title
+      - updated_at
+    AcademicWantToLearnRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        subject_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+        is_done:
+          type: boolean
+      required:
+      - subject_id
+      - title
+    AnswerBlockOrderItemRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Answer block UUID
+        order:
+          type: integer
+          description: New display order
+      required:
+      - id
+      - order
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        data:
+          $ref: '#/components/schemas/AuthResponseData'
+      required:
+      - data
+    AuthResponseData:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/AuthUserResponse'
+        tokens:
+          $ref: '#/components/schemas/TokenPair'
+      required:
+      - tokens
+      - user
+    AuthUserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+      required:
+      - email
+      - id
+    BlockOrderItemRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Block UUID
+        order:
+          type: integer
+          description: New display order
+      required:
+      - id
+      - order
+    Chapter:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 200
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - name
+      - updated_at
+    ChapterRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        subject_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - name
+      - subject_id
+    CurrentLevelEnum:
+      enum:
+      - none
+      - basic
+      - intermediate
+      - advanced
+      - expert
+      type: string
+      description: |-
+        * `none` - Not Started
+        * `basic` - Basic
+        * `intermediate` - Intermediate
+        * `advanced` - Advanced
+        * `expert` - Expert
+    DailyBreakdownItem:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        academic_seconds:
+          type: integer
+        skill_seconds:
+          type: integer
+      required:
+      - academic_seconds
+      - date
+      - skill_seconds
+    EvaluationAnswer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        skill_topic_id:
+          type: string
+          format: uuid
+          readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/LevelEnum'
+          readOnly: true
+        question_id:
+          type: string
+          format: uuid
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - id
+      - level
+      - question_id
+      - skill_topic_id
+      - updated_at
+    EvaluationAnswerBlock:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        content: {}
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - content
+      - type
+      - updated_at
+    EvaluationAnswerBlockReorderRequestRequest:
+      type: object
+      properties:
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerBlockOrderItemRequest'
+          description: List of answer blocks with updated order values
+      required:
+      - blocks
+    EvaluationAnswerBlockRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        answer_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        content: {}
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - content
+      - type
+    EvaluationAnswerCreateRequestRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Optional client-generated UUID
+        question_id:
+          type: string
+          format: uuid
+          description: UUID of the evaluation question
+        skill_topic_id:
+          type: string
+          format: uuid
+          description: UUID of the skill topic
+      required:
+      - question_id
+      - skill_topic_id
+    EvaluationAnswerDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        skill_topic_id:
+          type: string
+          format: uuid
+          readOnly: true
+        level:
+          allOf:
+          - $ref: '#/components/schemas/LevelEnum'
+          readOnly: true
+        question_id:
+          type: string
+          format: uuid
+          readOnly: true
+        question_text:
+          type: string
+          readOnly: true
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvaluationAnswerBlock'
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - blocks
+      - id
+      - level
+      - question_id
+      - question_text
+      - skill_topic_id
+      - updated_at
+    EvaluationQuestion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        level:
+          $ref: '#/components/schemas/LevelEnum'
+        text:
+          type: string
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        is_default:
+          type: boolean
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - id
+      - is_default
+      - level
+      - text
+      - updated_at
+    EvaluationQuestionReorderRequestRequest:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionOrderItemRequest'
+          description: List of questions with updated order values
+      required:
+      - questions
+    EvaluationQuestionRequest:
+      type: object
+      properties:
+        level:
+          $ref: '#/components/schemas/LevelEnum'
+        text:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - level
+      - text
+    ImageUploadRequestRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+          description: Image file (jpg, jpeg, png, gif, webp; max 10MB)
+      required:
+      - image
+    ImageUploadResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        data:
+          $ref: '#/components/schemas/ImageUploadResponseData'
+      required:
+      - data
+    ImageUploadResponseData:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+      required:
+      - url
+    LevelEnum:
+      enum:
+      - basic
+      - intermediate
+      - advanced
+      - expert
+      type: string
+      description: |-
+        * `basic` - Basic
+        * `intermediate` - Intermediate
+        * `advanced` - Advanced
+        * `expert` - Expert
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    MeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        data:
+          $ref: '#/components/schemas/AuthUserResponse'
+      required:
+      - data
+    OverviewAnalyticsData:
+      type: object
+      properties:
+        period:
+          type: string
+        start_date:
+          type: string
+        end_date:
+          type: string
+        academic_seconds:
+          type: integer
+        skill_seconds:
+          type: integer
+        total_seconds:
+          type: integer
+        daily_breakdown:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyBreakdownItem'
+        top_academic_topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopTopicItem'
+        top_skill_topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopTopicItem'
+      required:
+      - academic_seconds
+      - daily_breakdown
+      - end_date
+      - period
+      - skill_seconds
+      - start_date
+      - top_academic_topics
+      - top_skill_topics
+      - total_seconds
+    OverviewAnalyticsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        data:
+          $ref: '#/components/schemas/OverviewAnalyticsData'
+      required:
+      - data
+    PatchedAcademicTopicBlockRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        topic_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        content: {}
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+    PatchedAcademicTopicRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        chapter_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+    PatchedAcademicWantToLearnRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        subject_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+        is_done:
+          type: boolean
+    PatchedChapterRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        subject_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+    PatchedEvaluationAnswerBlockRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        answer_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        content: {}
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+    PatchedEvaluationQuestionRequest:
+      type: object
+      properties:
+        level:
+          $ref: '#/components/schemas/LevelEnum'
+        text:
+          type: string
+          minLength: 1
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+    PatchedSemesterRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        year:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+    PatchedSessionUpdateRequestRequest:
+      type: object
+      properties:
+        duration_seconds:
+          type: integer
+          description: Accumulated duration in seconds
+        is_completed:
+          type: boolean
+          description: Whether session is ended/completed
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: End timestamp in ISO 8601
+    PatchedSkillRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+    PatchedSkillTopicRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sub_skill_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+        current_level:
+          $ref: '#/components/schemas/CurrentLevelEnum'
+    PatchedSkillWantToLearnRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sub_skill_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+        is_done:
+          type: boolean
+    PatchedSubSkillRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        skill_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+    PatchedSubjectRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        semester_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+    QuestionOrderItemRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Question UUID
+        order:
+          type: integer
+          description: New display order
+      required:
+      - id
+      - order
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 6
+      required:
+      - email
+      - password
+    Semester:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 100
+        year:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - name
+      - updated_at
+      - year
+    SemesterRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        year:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - name
+      - year
+    SessionStartRequestModeEnum:
+      enum:
+      - stopwatch
+      - timer
+      type: string
+      description: |-
+        * `stopwatch` - stopwatch
+        * `timer` - timer
+    SessionStartRequestRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Optional client-generated session UUID
+        topic_type:
+          allOf:
+          - $ref: '#/components/schemas/TopicTypeEnum'
+          description: |-
+            Type of topic
+
+            * `academic` - academic
+            * `skill` - skill
+        topic_id:
+          type: string
+          format: uuid
+          description: UUID of the academic or skill topic
+        mode:
+          allOf:
+          - $ref: '#/components/schemas/SessionStartRequestModeEnum'
+          default: stopwatch
+        timer_goal_seconds:
+          type: integer
+          nullable: true
+          description: Required when mode is timer
+        started_at:
+          type: string
+          format: date-time
+          description: Session start timestamp in ISO 8601
+      required:
+      - started_at
+      - topic_id
+      - topic_type
+    Skill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 200
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - name
+      - updated_at
+    SkillRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - name
+    SkillTimeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        data:
+          $ref: '#/components/schemas/SkillTimeResponseData'
+      required:
+      - data
+    SkillTimeResponseData:
+      type: object
+      properties:
+        skill_id:
+          type: string
+          format: uuid
+        total_seconds:
+          type: integer
+      required:
+      - skill_id
+      - total_seconds
+    SkillTopic:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 300
+        current_level:
+          $ref: '#/components/schemas/CurrentLevelEnum'
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - title
+      - updated_at
+    SkillTopicRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sub_skill_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+        current_level:
+          $ref: '#/components/schemas/CurrentLevelEnum'
+      required:
+      - sub_skill_id
+      - title
+    SkillWantToLearn:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 300
+        is_done:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - title
+      - updated_at
+    SkillWantToLearnRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sub_skill_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+        is_done:
+          type: boolean
+      required:
+      - sub_skill_id
+      - title
+    SubSkill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 200
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - name
+      - updated_at
+    SubSkillRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        skill_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - name
+      - skill_id
+    SubSkillTimeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        data:
+          $ref: '#/components/schemas/SubSkillTimeResponseData'
+      required:
+      - data
+    SubSkillTimeResponseData:
+      type: object
+      properties:
+        sub_skill_id:
+          type: string
+          format: uuid
+        total_seconds:
+          type: integer
+      required:
+      - sub_skill_id
+      - total_seconds
+    Subject:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 200
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - name
+      - updated_at
+    SubjectRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        semester_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - name
+      - semester_id
+    SyncPushChangesRequest:
+      type: object
+      properties:
+        semesters:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        subjects:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        academic_want_to_learn:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        chapters:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        academic_topics:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        academic_topic_blocks:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        skills:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        sub_skills:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        skill_want_to_learn:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        skill_topics:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        evaluation_questions:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        evaluation_answers:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        evaluation_answer_blocks:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        topic_sessions:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+    SyncPushRequestRequest:
+      type: object
+      properties:
+        last_sync:
+          type: string
+          format: date-time
+          nullable: true
+          description: ISO 8601 timestamp of last successful sync
+        changes:
+          allOf:
+          - $ref: '#/components/schemas/SyncPushChangesRequest'
+          description: Dictionary of model changes keyed by model name
+    SyncPushResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        data:
+          $ref: '#/components/schemas/SyncPushResponseData'
+      required:
+      - data
+    SyncPushResponseData:
+      type: object
+      properties:
+        server_changes:
+          type: object
+          additionalProperties: {}
+          description: Dictionary of records updated on server since last_sync
+        sync_time:
+          type: string
+          description: Current server UTC timestamp in ISO 8601 format
+      required:
+      - server_changes
+      - sync_time
+    TokenPair:
+      type: object
+      properties:
+        access:
+          type: string
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - refresh
+    TopTopicItem:
+      type: object
+      properties:
+        topic_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        total_seconds:
+          type: integer
+      required:
+      - title
+      - topic_id
+      - total_seconds
+    TopicSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        mode:
+          $ref: '#/components/schemas/TopicSessionModeEnum'
+        timer_goal_seconds:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        academic_topic_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        academic_topic_title:
+          type: string
+          readOnly: true
+        skill_topic_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        skill_topic_title:
+          type: string
+          readOnly: true
+        started_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+        duration_seconds:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        is_completed:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - academic_topic_id
+      - academic_topic_title
+      - id
+      - skill_topic_id
+      - skill_topic_title
+      - started_at
+      - updated_at
+    TopicSessionModeEnum:
+      enum:
+      - stopwatch
+      - timer
+      type: string
+      description: |-
+        * `stopwatch` - Stopwatch
+        * `timer` - Timer
+    TopicSessionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        data:
+          allOf:
+          - $ref: '#/components/schemas/TopicSession'
+          nullable: true
+      required:
+      - data
+    TopicTimeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        data:
+          $ref: '#/components/schemas/TopicTimeResponseData'
+      required:
+      - data
+    TopicTimeResponseData:
+      type: object
+      properties:
+        topic_type:
+          type: string
+        topic_id:
+          type: string
+          format: uuid
+        total_seconds:
+          type: integer
+      required:
+      - topic_id
+      - topic_type
+      - total_seconds
+    TopicTypeEnum:
+      enum:
+      - academic
+      - skill
+      type: string
+      description: |-
+        * `academic` - academic
+        * `skill` - skill
+    TypeEnum:
+      enum:
+      - text
+      - code
+      - link
+      - image
+      type: string
+      description: |-
+        * `text` - Text
+        * `code` - Code
+        * `link` - Link
+        * `image` - Image
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -140,3 +140,27 @@ class EvaluationAnswerDetailSerializer(serializers.ModelSerializer):
         return ret
 
 
+class QuestionOrderItemSerializer(serializers.Serializer):
+    id = serializers.UUIDField(help_text="Question UUID")
+    order = serializers.IntegerField(help_text="New display order")
+
+
+class EvaluationQuestionReorderRequestSerializer(serializers.Serializer):
+    questions = QuestionOrderItemSerializer(many=True, help_text="List of questions with updated order values")
+
+
+class EvaluationAnswerCreateRequestSerializer(serializers.Serializer):
+    id = serializers.UUIDField(required=False, help_text="Optional client-generated UUID")
+    question_id = serializers.UUIDField(help_text="UUID of the evaluation question")
+    skill_topic_id = serializers.UUIDField(help_text="UUID of the skill topic")
+
+
+class AnswerBlockOrderItemSerializer(serializers.Serializer):
+    id = serializers.UUIDField(help_text="Answer block UUID")
+    order = serializers.IntegerField(help_text="New display order")
+
+
+class EvaluationAnswerBlockReorderRequestSerializer(serializers.Serializer):
+    blocks = AnswerBlockOrderItemSerializer(many=True, help_text="List of answer blocks with updated order values")
+
+

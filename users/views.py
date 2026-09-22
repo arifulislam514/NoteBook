@@ -1,14 +1,28 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from drf_spectacular.utils import extend_schema
 from common.response import success_response, error_response
 from .models import User
-from .serializers import RegisterSerializer, LoginSerializer
+from .serializers import (
+    RegisterSerializer,
+    LoginSerializer,
+    AuthResponseSerializer,
+    MeResponseSerializer,
+)
 
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer
 
+    @extend_schema(
+        tags=['Authentication'],
+        summary='Register new user',
+        description='Register a new account with email and password. Returns user details and JWT access/refresh tokens.',
+        request=RegisterSerializer,
+        responses={201: AuthResponseSerializer},
+    )
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if not serializer.is_valid():
@@ -36,7 +50,15 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
 
+    @extend_schema(
+        tags=['Authentication'],
+        summary='Login user',
+        description='Authenticate with email and password to receive JWT access and refresh tokens.',
+        request=LoginSerializer,
+        responses={200: AuthResponseSerializer},
+    )
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if not serializer.is_valid():
@@ -73,6 +95,12 @@ class LoginView(APIView):
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['Authentication'],
+        summary='Current user info',
+        description='Retrieve the ID and email of the currently authenticated user.',
+        responses={200: MeResponseSerializer},
+    )
     def get(self, request):
         user = request.user
         return success_response({

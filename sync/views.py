@@ -1,7 +1,9 @@
 from datetime import datetime, timezone
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema
 from common.response import success_response, error_response
+from .serializers import SyncPushRequestSerializer, SyncPushResponseSerializer
 
 from academic.models import (
     Semester,
@@ -186,6 +188,15 @@ class SyncPushView(APIView):
         },
     ]
 
+    serializer_class = SyncPushRequestSerializer
+
+    @extend_schema(
+        tags=['Data Synchronization'],
+        summary='Bidirectional sync push',
+        description='Upload client changes across all models and receive server-side changes since the last_sync timestamp.',
+        request=SyncPushRequestSerializer,
+        responses={200: SyncPushResponseSerializer},
+    )
     def post(self, request):
         user = request.user
         data = request.data or {}

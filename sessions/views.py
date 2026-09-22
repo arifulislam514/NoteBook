@@ -5,17 +5,35 @@ from django.db.models.functions import TruncDate
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from common.response import success_response, error_response
 from academic.models import AcademicTopic
 from skills.models import SkillTopic
 from .models import TopicSession
-from .serializers import TopicSessionSerializer
+from .serializers import (
+    TopicSessionSerializer,
+    TopicSessionResponseSerializer,
+    SessionStartRequestSerializer,
+    SessionUpdateRequestSerializer,
+    TopicTimeResponseSerializer,
+    SubSkillTimeResponseSerializer,
+    SkillTimeResponseSerializer,
+    OverviewAnalyticsResponseSerializer,
+)
 
 
 class SessionStartView(APIView):
     """Start a new study session."""
     permission_classes = [IsAuthenticated]
+    serializer_class = SessionStartRequestSerializer
 
+    @extend_schema(
+        tags=['Study Sessions'],
+        summary='Start new session',
+        description='Start a new study session for an academic or skill topic (stopwatch or timer mode).',
+        request=SessionStartRequestSerializer,
+        responses={201: TopicSessionResponseSerializer},
+    )
     def post(self, request):
         # Prevent starting a new session if one is already active
         active = TopicSession.objects.filter(
@@ -81,7 +99,15 @@ class SessionStartView(APIView):
 class SessionUpdateView(APIView):
     """Pause (update duration) or end a session."""
     permission_classes = [IsAuthenticated]
+    serializer_class = SessionUpdateRequestSerializer
 
+    @extend_schema(
+        tags=['Study Sessions'],
+        summary='Update or end session',
+        description='Update duration seconds and/or mark a study session as completed.',
+        request=SessionUpdateRequestSerializer,
+        responses={200: TopicSessionResponseSerializer},
+    )
     def patch(self, request, pk):
         session = get_object_or_404(
             TopicSession, id=pk, user=request.user
@@ -108,6 +134,12 @@ class ActiveSessionView(APIView):
     """Returns the currently active (not completed) session, if any."""
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['Study Sessions'],
+        summary='Get active session',
+        description='Returns the currently active (not completed) session, or null if no session is running.',
+        responses={200: TopicSessionResponseSerializer},
+    )
     def get(self, request):
         session = TopicSession.objects.filter(
             user=request.user,
@@ -122,6 +154,16 @@ class TopicTimeView(APIView):
     """Total time spent on a single topic."""
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['Analytics'],
+        summary='Topic total study time',
+        description='Returns total seconds studied for a specific academic or skill topic.',
+        parameters=[
+            OpenApiParameter(name='topic_type', type=str, location=OpenApiParameter.QUERY, required=True, enum=['academic', 'skill'], description='Type of topic'),
+            OpenApiParameter(name='topic_id', type=str, location=OpenApiParameter.QUERY, required=True, description='UUID of the topic'),
+        ],
+        responses={200: TopicTimeResponseSerializer},
+    )
     def get(self, request):
         topic_type = request.query_params.get('topic_type')
         topic_id   = request.query_params.get('topic_id')
@@ -154,6 +196,15 @@ class SubSkillTimeView(APIView):
     """Total time spent on all topics under a sub-skill."""
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['Analytics'],
+        summary='Sub-skill total study time',
+        description='Returns total seconds studied for all topics belonging to a sub-skill.',
+        parameters=[
+            OpenApiParameter(name='sub_skill_id', type=str, location=OpenApiParameter.QUERY, required=True, description='UUID of the sub-skill'),
+        ],
+        responses={200: SubSkillTimeResponseSerializer},
+    )
     def get(self, request):
         sub_skill_id = request.query_params.get('sub_skill_id')
         if not sub_skill_id:
@@ -175,6 +226,15 @@ class SkillTimeView(APIView):
     """Total time spent on all topics under a skill."""
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['Analytics'],
+        summary='Skill total study time',
+        description='Returns total seconds studied across all sub-skills under a parent skill.',
+        parameters=[
+            OpenApiParameter(name='skill_id', type=str, location=OpenApiParameter.QUERY, required=True, description='UUID of the skill'),
+        ],
+        responses={200: SkillTimeResponseSerializer},
+    )
     def get(self, request):
         skill_id = request.query_params.get('skill_id')
         if not skill_id:
@@ -203,6 +263,16 @@ class OverviewAnalyticsView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        tags=['Analytics'],
+        summary='Overview study analytics',
+        description='Academic vs Skill study time breakdown, daily timeline, and top 5 topics for daily, weekly, monthly, or yearly periods.',
+        parameters=[
+            OpenApiParameter(name='period', type=str, location=OpenApiParameter.QUERY, required=False, default='weekly', enum=['daily', 'weekly', 'monthly', 'yearly'], description='Analytics time period'),
+            OpenApiParameter(name='date', type=str, location=OpenApiParameter.QUERY, required=False, description='Reference date formatted as YYYY-MM-DD (defaults to today)'),
+        ],
+        responses={200: OverviewAnalyticsResponseSerializer},
+    )
     def get(self, request):
         period = request.query_params.get('period', 'weekly')
         date_str = request.query_params.get('date')

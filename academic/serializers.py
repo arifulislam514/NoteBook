@@ -112,3 +112,12 @@ class AcademicTopicBlockSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         topic_id = validated_data.pop('topic_id')
         return AcademicTopicBlock.objects.create(topic_id=topic_id, **validated_data)
+
+
+class BlockOrderItemSerializer(serializers.Serializer):
+    id = serializers.UUIDField(help_text="Block UUID")
+    order = serializers.IntegerField(help_text="New display order")
+
+
+class AcademicTopicBlockReorderRequestSerializer(serializers.Serializer):
+    blocks = BlockOrderItemSerializer(many=True, help_text="List of blocks with updated order values")

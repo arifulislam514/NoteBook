@@ -29,3 +29,28 @@ class RegisterSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+
+class AuthUserResponseSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    email = serializers.EmailField()
+
+
+class TokenPairSerializer(serializers.Serializer):
+    access = serializers.CharField()
+    refresh = serializers.CharField()
+
+
+class AuthResponseDataSerializer(serializers.Serializer):
+    user = AuthUserResponseSerializer()
+    tokens = TokenPairSerializer()
+
+
+class AuthResponseSerializer(serializers.Serializer):
+    success = serializers.BooleanField(default=True)
+    data = AuthResponseDataSerializer()
+
+
+class MeResponseSerializer(serializers.Serializer):
+    success = serializers.BooleanField(default=True)
+    data = AuthUserResponseSerializer()
